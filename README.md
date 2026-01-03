@@ -27,12 +27,13 @@ In VARIABLES, replace at:
 <webdir>, <backupdir>, <recipient_email>, <keep_day>, <webfiles1> and <webfiles2>
 ```
 In BACKUP CREATION & COMPRESSION, replace at:
-```"yourStrongPassword"```
-
+```
+"yourStrongPassword"
+```
 
 4. Give the file execution permissions for the owner only and change owner to root:
 ```
-$ chmod 700 /path/to/the/.script/db_backup_script.sh && chown root:root /path/to/the/.script/db_backup_script.sh
+# chmod 700 /path/to/the/.script/db_backup_script.sh && chown root:root /path/to/the/.script/db_backup_script.sh
 ```
 
 5. Edit `/etc/crontab` and at the end, add:
@@ -42,7 +43,8 @@ $ chmod 700 /path/to/the/.script/db_backup_script.sh && chown root:root /path/to
 This will execute the script on the first of each month at 0:00.
 
 6. If you prefer using a Systemd timer, you will need to create a timer and a service:
-Execute ```systemctl edit --full --force backup-db.service``` to create the service unit and add:
+
+Execute ```# systemctl edit --full --force backup-db.service``` to create the service unit and add:
 ```
 [Unit]
 Description=Run the database backup script
@@ -53,7 +55,7 @@ ExecStart= /path/to/the/.script/db_backup_script.sh
 ```
 This will execute the db_backup_script.sh from your scripts directory with root privileges.
 
-Then execute ```systemctl edit --full --force backup-db.timer``` to create the timer unit and add:
+Then execute ```# systemctl edit --full --force backup-db.timer``` to create the timer unit and add:
 ```
 [Unit]
 Description=Run a database backup one time per month
@@ -68,10 +70,20 @@ WantedBy=timers.target
 ```
 This will execute the backup-db service on the first of each month at 0:00.
 
+Enable the timer unit using ```# systemctl enable backup-db.timer```.
+
 7. To make sure there are no errors in the script, run it using:
 ```
 # sh /path/to/the/.script/db_backup_script.sh
 ```
+
+8. To make sure there are no errors in the timer and service units:
+
+Start the timer manually:
+```
+# systemctl start backup-db.timer
+```
+Then check if the task is executed successfully with ```journalctl -xe```.
 
 # WARNING !
 THIS SCRIPT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE CODE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
