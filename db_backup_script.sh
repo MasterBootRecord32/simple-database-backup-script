@@ -4,7 +4,7 @@
 # LICENSED UNDER CUSTOM MOZILLA PUBLIC LICENSE
 
 # VARIABLES
-backupdir/path/to/your/backupdir # FOR EXAMPLE /var/lib/backup/websrv/dev-disk-by-uuid-08ea453b-feff-47c2-8ba5-2aefc7109624/backup/databases
+backupdir=/path/to/your/backupdir # FOR EXAMPLE /var/lib/backup/db
 recipient_email=youremail@yourdomain.com
 user=yourMysqlUser # THE USERNAME OF YOUR MYSQL USER (THE USER SHOULD HAVE ACCESS TO ALL THE DATABASES YOU WANT TO BACKUP)
 mysqlpass='mysqlUserPassword' # THE PASSWORD OF OF YOUR MYSQL USER 
@@ -12,9 +12,9 @@ keep_day=120 # NUMBER OF DAYS YOU WANT TO KEEP OLDER BACKUPS
 dbname1=nameOfYourDatabase1 # THE NAME OF THE FIRST DATABASE YOU WANT TO BACKUP
 dbname2=nameOfYourDatabase2 # THE NAME OF THE SECOND DATABASE YOU WANT TO BACKUP
 sqlfile1=${backupdir}/${dbname1}-$(date +%d-%m-%Y_%H-%M-%S).sql # THE NAME OF THE FIRST DATABASE DUMP AND ITS SAVING LOCATION
-zipfile1=${backupdir}/${dbname1}-$(date +%d-%m-%Y_%H-%M-%S).zip # THE NAME OF THE FIRST ZIP BACKUP AND ITS SAVING LOCATION
+zipfile1=${backupdir}/${dbname1}-$(date +%d-%m-%Y_%H-%M-%S).7z # THE NAME OF THE FIRST ZIP BACKUP AND ITS SAVING LOCATION
 sqlfile2=${backupdir}/${dbname2}-$(date +%d-%m-%Y_%H-%M-%S).sql # THE NAME OF THE SECOND DATABASE DUMP AND ITS SAVING LOCATION
-zipfile2=${backupdir}/${dbname2}-$(date +%d-%m-%Y_%H-%M-%S).zip # THE NAME OF THE SECOND ZIP BACKUP AND ITS SAVING LOCATION
+zipfile2=${backupdir}/${dbname2}-$(date +%d-%m-%Y_%H-%M-%S).7z # THE NAME OF THE SECOND ZIP BACKUP AND ITS SAVING LOCATION
 
 # SQL DUMP CREATION 
 ### DATABASE 1 DUMP
@@ -37,7 +37,7 @@ fi
 
 # BACKUP COMPRESSION 
 ### DATABASE 1 COMPRESSION
-zip -P yourStrongPassword ${zipfile1} ${sqlfile1} # CREATES A ZIP FILE OF THE FIRST SQL DUMP: -P SECURES THE ZIP WITH A PASSWORD 
+7z a -p"yourStrongPassword" ${zipfile1} ${sqlfile1} # CREATES A 7Z ARCHIVE OF THE FIRST SQL DUMP: "a" ADDS ALL THE FILE TO THE ARCHIVE AND "-p" SECURES THE ARCHIVE WITH A PASSWORD 
 if [ $? -eq 0 ]; then
   echo 'The backup was successfully compressed' 
 else
@@ -48,7 +48,7 @@ rm ${sqlfile1} # CLEANS THE DIRECTORY BY DELETING THE DUMP OF THE DATABASE
 echo 'Backup for your' ${dbname1} 'database was successfully created and is located in' ${zipfile1} | mail -s 'Backup was successfully created!' ${recipient_email} # IF THE BACKUP IS SUCCESSFULLY CREATED, AN E-MAIL IS SENT TO ADMIN
 
 ### DATABASE 2 COMPRESSION
-zip -P yourStrongPassword ${zipfile2} ${sqlfile2} # CREATES A ZIP FILE OF THE SECOND SQL DUMP 
+7z a -p"yourStrongPassword" ${zipfile2} ${sqlfile2} # CREATES A 7Z ARCHIVE OF THE SECOND SQL DUMP 
 if [ $? -eq 0 ]; then
   echo 'The backup was successfully compressed' 
 else
