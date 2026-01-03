@@ -2,7 +2,8 @@
 The goal of this simple BASH script is to automate the backup of databases on a MySQL Server using a minimal set of tools. 
 
 # Features
-- Backup one or multiple databases and compress the .sql dumps in a Zip archive ;
+- Backup one or multiple databases and compress the .sql dumps in a 7z archive ;
+- Protect the archives with a custom password ;
 - Set a custom backup location ;
 - Set a custom name for the backups ;
 - Send E-Mail at the end of each step ;
@@ -11,12 +12,13 @@ The goal of this simple BASH script is to automate the backup of databases on a 
 The code is made so that it is easy to read and understand and can be adapted to specific use-cases.
 
 # Dependencies
-- The `cron` job scheduler ;
-- The `zip` CLI tool ;
-- A mail transfer agent such as `exim4` or `sendmail` ;
+- The `cron` job scheduler (optional if you prefer using Systemd timers) ;
+- The `p7zip` CLI tool ;
+- The `p7zip-plugins` pugins package ;
+- A mail transfer agent such as `exim4`, `sendmail` or `ssmtp` ;
 
 # Installation
-1. Clone this repository in you home directory
+1. Clone this repository in your home directory ;
 2. Move `db_backup_script.sh` to a dedicated directory (for example, in a .script directory, in your home directory) ;
 3. Edit the file to replace the placeholders with the wanted values:
 
@@ -25,13 +27,12 @@ In VARIABLES, replace at:
 <webdir>, <backupdir>, <recipient_email>, <keep_day>, <webfiles1> and <webfiles2>
 ```
 In BACKUP CREATION & COMPRESSION, replace at:
-```
-"yourStrongPassword" with a custom password ;
-```
+```"yourStrongPassword"```
 
-4. Give this file execution permissions and change owner to root:
+
+4. Give the file execution permissions for the owner only and change owner to root:
 ```
-$ chmod 700 /path/to/the/.script/web_backup_script.sh && chown root:root /path/to/the/.script/web_backup_script.sh
+$ chmod 700 /path/to/the/.script/db_backup_script.sh && chown root:root /path/to/the/.script/db_backup_script.sh
 ```
 
 5. Edit `/etc/crontab` and at the end, add:
@@ -40,7 +41,34 @@ $ chmod 700 /path/to/the/.script/web_backup_script.sh && chown root:root /path/t
 ```
 This will execute the script on the first of each month at 0:00.
 
-6. To make sure there are no errors in the script, run it using:
+6. If you prefer using a Systemd timer, you will need to create a timer and a service:
+Execute ```systemctl edit --full --force backup-db.service``` to create the service unit and add:
+```
+[Unit]
+Description=Run the database backup script
+
+[Service]
+User=root
+ExecStart= /path/to/the/.script/db_backup_script.sh
+```
+This will execute the db_backup_script.sh from your scripts directory with root privileges.
+
+Then execute ```systemctl edit --full --force backup-db.timer``` to create the timer unit and add:
+```
+[Unit]
+Description=Run a database backup one time per month
+
+[Timer]
+OnCalendar=*-*-01 00:00:00
+Persistent=true
+Unit=backup-db.service
+
+[Install]
+WantedBy=timers.target
+```
+This will execute the backup-db service on the first of each month at 0:00.
+
+7. To make sure there are no errors in the script, run it using:
 ```
 # sh /path/to/the/.script/db_backup_script.sh
 ```
