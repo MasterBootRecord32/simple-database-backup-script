@@ -24,7 +24,7 @@ The code is made so that it is easy to read and understand and can be adapted to
 
 In VARIABLES, replace at:
 ```
-<webdir>, <backupdir>, <recipient_email>, <keep_day>, <webfiles1> and <webfiles2>
+<backupdir>, <recipient_email>, <user>, <mysqlpass>, <keep_day>, <dbname1> and <dbname2>
 ```
 In BACKUP CREATION & COMPRESSION, replace at:
 ```
