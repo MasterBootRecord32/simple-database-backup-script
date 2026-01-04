@@ -1,0 +1,8 @@
+# SYSTEMD SERVICE FOR DATABASE BACKUP
+
+[Unit]
+Description=Run the database backup script
+
+[Service]
+User=root # RUNS THE SCRIPT AS ROOT
+ExecStart= /path/to/the/.script/db_backup_script.sh # LOCATION OF THE SCRIPT TO BE RAN
