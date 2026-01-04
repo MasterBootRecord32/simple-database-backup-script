@@ -1,0 +1,12 @@
+# SYSTEMD TIMER FOR DATABASE BACKUP
+
+[Unit]
+Description=Run a database backup one time per month
+
+[Timer]
+OnCalendar=*-*-01 00:00:00 # YYYY-MM-DD HH:MM:SS, RUNS THE ASSOCIATED SERVICE ON THE FIRST DAY OF EACH MONTH AT 00:00
+Persistent=true # CATCH UP ON MISSED RUNS IF THE SYSTEM WAS OFFLINE
+Unit=backup-db.service # ASSOCIATED SERVICE TO BE TRIGGERED BY THE TIMER
+
+[Install]
+WantedBy=timers.target # ACTIVATES THE TIMER ON SYSTEM STARTUP
